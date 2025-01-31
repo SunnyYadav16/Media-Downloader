@@ -11,6 +11,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
+from .routers.youtube_router import yt_router
+
 # from . import database, config
 #
 # database.Base.metadata.create_all(bind=database.engine)
@@ -35,6 +37,8 @@ from loguru import logger
 # )
 
 app = FastAPI()
+
+app.include_router(yt_router, prefix="/app/v1")
 
 logger.add("log_api.log", rotation="100 MB")    # Automatically rotate log file
 
@@ -73,3 +77,5 @@ def health():
         "info": get_info()
     }
     return result
+
+
