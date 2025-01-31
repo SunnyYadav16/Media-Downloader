@@ -95,13 +95,13 @@ bash git-changelog.sh > CHANGELOG.md
 ## Linting
 You can run `pylint` with the following command inside the `fastapi-boilerplate` directory:
 ```bash
-pylint --recursive=y api
+pylint --recursive=y app
 ```
 
 ## Running Tests
 You can run `pytest` with the following command inside the `fastapi-boilerplate` directory:
 ```bash
-pytest api/
+pytest app/
 ```
 
 ## Quick Start (Local)
@@ -128,12 +128,12 @@ pytest api/
 
 5. Run `celery` worker:
     ```bash
-    celery --app=api.worker.celery worker --loglevel=info --logfile=celery.log
+    celery --app=app.worker.celery worker --loglevel=info --logfile=celery.log
     ```
 
 6. Run the development server:
     ```bash
-    uvicorn api.main:app --reload
+    uvicorn app.main:app --reload
     ```
 
 7. View the API docs:
