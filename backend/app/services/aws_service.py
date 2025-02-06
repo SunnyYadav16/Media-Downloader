@@ -11,8 +11,8 @@ class AwsService:
     s3_client = boto3.client('s3')
 
     def __init__(self):
-        self.aws_access_key = settings.AWS_ACCESS_KEY_ID
-        self.aws_secret_key = settings.AWS_SECRET_ACCESS_KEY
+        self.aws_access_key = settings.AWS_ACCESS_KEY_ID_VALUE
+        self.aws_secret_key = settings.AWS_SECRET_ACCESS_KEY_VALUE
         self.bucket_name = settings.S3_BUCKET_NAME
         self.is_s3_connected()
 
