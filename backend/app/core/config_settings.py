@@ -15,8 +15,8 @@ class Settings(BaseSettings):
     ALLOW_HEADERS: List[str]
     APP_DEBUG: bool
     S3_BUCKET_NAME: str
-    AWS_ACCESS_KEY_ID: str
-    AWS_SECRET_ACCESS_KEY: str
+    AWS_ACCESS_KEY_ID_VALUE: str
+    AWS_SECRET_ACCESS_KEY_VALUE: str
 
     class Config:
         """
