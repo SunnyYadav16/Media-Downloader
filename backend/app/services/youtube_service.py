@@ -1,11 +1,16 @@
 import asyncio
+import glob
+import json
 import os
 import re
 import subprocess
 from typing import Dict
 
-from ..core.exceptions import YouTubeDownloadError
+import yt_dlp
 
+from .aws_service import AwsService
+from ..core.exceptions import YouTubeDownloadError
+aws_service = AwsService()
 
 class YouTubeService:
     def __init__(self):
@@ -43,6 +48,20 @@ class YouTubeService:
             else:
                 print(f"Error: {e.stderr.strip()}")
             return False
+
+    def get_youtube_video_title(self, url: str) -> str:
+        # Configure yt-dlp to only extract information without downloading the video.
+        ydl_opts = {
+            'quiet': True,
+            # 'skip_download': True,
+        }
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            # Extract video information as a dictionary
+            info_dict = ydl.extract_info(url)
+            # The video title is available in the 'title' key.
+            js = json.dumps(ydl.sanitize_info(info_dict)['fulltitle']).split('"')[1]
+            # return info_dict.get('title', 'Unknown Title')
+            return js
 
     async def get_formats(self, url: str) -> Dict:
         try:
@@ -126,7 +145,8 @@ class YouTubeService:
                     f"Available formats are: {', '.join(available_formats)}"
                 )
 
-            output_template = "downloads/%(title)s-%(resolution)s.%(ext)s"
+            # output_template = "downloads/%(title)s-%(resolution)s.%(ext)s"
+            output_template = f"downloads/{self.get_youtube_video_title(url)}-{quality}.{output_format}"
             os.makedirs("downloads", exist_ok=True)
 
             # Modified format string to ensure we get both video and audio
@@ -153,7 +173,6 @@ class YouTubeService:
             ]
 
             print(f"\nStarting download in {quality} ({output_format} format)...")
-            print("Command:", " ".join(cmd))
 
             result = subprocess.run(
                 cmd,
@@ -165,10 +184,36 @@ class YouTubeService:
             if result.returncode != 0:
                 raise YouTubeDownloadError(f"Download failed: {result.stdout}")
 
+            # Post-download renaming: yt-dlp appends extra text to the filename, so we need to rename the file to remove it.
+            expected_filename = f"{self.get_youtube_video_title(url)}-{quality}.{output_format}"
+            expected_filepath = os.path.join("downloads", expected_filename)
+
+            # Create a glob pattern that matches files starting with the expected name but possibly with extra text before the extension.
+            # For example, if yt-dlp appends '.f248' then the file might be:
+            # "downloads/Recursion tree method ...-1080p.f248.webm"
+            pattern = os.path.join("downloads", f"{self.get_youtube_video_title(url)}-{quality}*{'.' + output_format}")
+            matching_files = glob.glob(pattern)
+
+            # Look for a file that doesn't exactly match our expected name.
+            for file_path in matching_files:
+                if os.path.basename(file_path) != expected_filename:
+                    print(f"Renaming {file_path} to {expected_filepath}")
+                    os.rename(file_path, expected_filepath)
+                    break  # Assuming only one such file exists
+
+            # Upload the downloaded video to S3
+            download_url = aws_service.upload_file(expected_filepath)
+            if not download_url:
+                raise YouTubeDownloadError("Failed to upload the downloaded video to S3")
+
+            if os.path.exists(expected_filepath):
+                os.remove(expected_filepath)
+            else:
+                print(f"The file {expected_filepath} does not exist")
+
             return {
                 "status": "success",
-                "message": "Video downloaded successfully",
-                "location": "downloads/"
+                "message": f"Video downloaded successfully. Go to this link to download the media - {download_url}",
             }
 
         except YouTubeDownloadError:
@@ -180,7 +225,8 @@ class YouTubeService:
         if not audio_quality.isdigit() or int(audio_quality) not in range(10):
             raise YouTubeDownloadError("Audio quality must be between 0 (best) and 9 (worst)")
 
-        output_template = "downloads/%(title)s-%(abr)s.%(ext)s"
+        # output_template = "downloads/%(title)s-%(abr)s.%(ext)s"
+        output_template = f"downloads/{self.get_youtube_video_title(url)}.{audio_format}"
 
         try:
             cmd = [
@@ -204,7 +250,37 @@ class YouTubeService:
             if proc.returncode != 0:
                 raise YouTubeDownloadError(f"Download failed: {stderr.decode()}")
 
-            return {"status": "success", "message": "Audio downloaded successfully"}
+            # Post-download renaming: yt-dlp appends extra text to the filename, so we need to rename the file to remove it.
+            expected_filename = f"{self.get_youtube_video_title(url)}.{audio_format}"
+            expected_filepath = os.path.join("downloads", expected_filename)
 
+            # Create a glob pattern that matches files starting with the expected name but possibly with extra text before the extension.
+            # For example, if yt-dlp appends '.f248' then the file might be:
+            # "downloads/Recursion tree method ...-1080p.f248.webm"
+            pattern = os.path.join("downloads",
+                                   f"{self.get_youtube_video_title(url)}*{'.' + audio_format}")
+            matching_files = glob.glob(pattern)
+
+            # Look for a file that doesn't exactly match our expected name.
+            for file_path in matching_files:
+                if os.path.basename(file_path) != expected_filename:
+                    print(f"Renaming {file_path} to {expected_filepath}")
+                    os.rename(file_path, expected_filepath)
+                    break  # Assuming only one such file exists
+
+            # Upload the downloaded video to S3
+            download_url = aws_service.upload_file(expected_filepath)
+            if not download_url:
+                raise YouTubeDownloadError("Failed to upload the downloaded video to S3")
+
+            if os.path.exists(expected_filepath):
+                os.remove(expected_filepath)
+            else:
+                print(f"The file {expected_filepath} does not exist")
+
+            return {
+                "status": "success",
+                "message": f"Audio downloaded successfully. Go to this link to download the media - {download_url}",
+            }
         except Exception as e:
             raise YouTubeDownloadError(f"Error downloading audio: {str(e)}")

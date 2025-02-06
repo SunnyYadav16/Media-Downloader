@@ -9,5 +9,5 @@ services:
       - "8000:8000"  # Expose the application on port 8000
     volumes:
       - .:/app  # Mount the current directory into the container
-    environment:
-      - PYTHONUNBUFFERED=1
+    env_file:
+      - ./.env  # Load environment variables from the .env file

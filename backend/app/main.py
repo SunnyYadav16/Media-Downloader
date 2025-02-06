@@ -1,46 +1,27 @@
-"""Application main."""
-#--------------------------------------------#
-# PEP-8 Imports Priority.
-# 1.Standard Library Imports
-# 2.Related Library Imports
-# 3.Local application/library imports
-#--------------------------------------------#
 import os
-from functools import lru_cache
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
+from .core.config_settings import settings
 from .routers.youtube_router import yt_router
 
-# from . import database, config
-#
-# database.Base.metadata.create_all(bind=database.engine)
-#
-# # @lru_cache()
-# def get_settings():
-#     """
-#     Config settings function.
-#     """
-#     return config.Settings()
-#
-# conf_settings = get_settings()
-#
-# # app = FastAPI(debug=conf_settings.APP_DEBUG)
-#
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=conf_settings.ALLOWED_ORIGINS,
-#     allow_credentials=conf_settings.ALLOW_CREDENTIALS,
-#     allow_methods=conf_settings.ALLOW_METHODS,
-#     allow_headers=conf_settings.ALLOW_HEADERS,
-# )
+app = FastAPI(debug=settings.APP_DEBUG)
 
-app = FastAPI()
+# app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_credentials=settings.ALLOWED_ORIGINS,
+    allow_methods=settings.ALLOW_METHODS,
+    allow_headers=settings.ALLOW_HEADERS,
+)
 
 app.include_router(yt_router, prefix="/app/v1")
 
-logger.add("log_api.log", rotation="100 MB")    # Automatically rotate log file
+logger.add("log_api.log", rotation="100 MB")  # Automatically rotate log file
+
 
 def get_info():
     """
@@ -55,6 +36,7 @@ def get_info():
     }
     return info
 
+
 @app.get("/")
 async def root():
     """
@@ -65,6 +47,7 @@ async def root():
         "message": "Hello from the FastAPI Boilerplate!"
     }
     return result
+
 
 @app.get("/health")
 def health():
@@ -77,5 +60,3 @@ def health():
         "info": get_info()
     }
     return result
-
-
