@@ -213,7 +213,7 @@ class YouTubeService:
 
             return {
                 "status": "success",
-                "message": f"Video downloaded successfully. Go to this link to download the media - {download_url}",
+                "message": f"{download_url}",
             }
 
         except YouTubeDownloadError:
@@ -280,7 +280,7 @@ class YouTubeService:
 
             return {
                 "status": "success",
-                "message": f"Audio downloaded successfully. Go to this link to download the media - {download_url}",
+                "message": f"{download_url}",
             }
         except Exception as e:
             raise YouTubeDownloadError(f"Error downloading audio: {str(e)}")

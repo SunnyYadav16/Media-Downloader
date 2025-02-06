@@ -28,8 +28,7 @@ class AwsService:
 
             # Try to access the bucket by listing its contents (limited to 1 item)
             self.s3_client.list_objects_v2(Bucket=self.bucket_name, MaxKeys=1)
-            print(f"Successfully connected to the S3 bucket: {self.bucket_name}")
-            logger.info(f"Successfully connected to the S3 bucket: {self.bucket_name}")
+            logger.info(f"Successfully connected to the S3 bucket")
             return True
         except NoCredentialsError:
             print("AWS credentials not found.")
