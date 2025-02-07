@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 from typing import List
 
@@ -22,7 +23,8 @@ class Settings(BaseSettings):
         """
         Config class.
         """
-        env_file = ".env"
+        if os.path.exists(".env"):
+            env_file = ".env"
         env_file_encoding = 'utf-8'
 
 
