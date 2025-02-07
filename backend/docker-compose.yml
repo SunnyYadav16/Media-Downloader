@@ -9,7 +9,9 @@ services:
       - "8000:8000"  # Expose the application on port 8000
     volumes:
       - .:/app  # Mount the current directory into the container
-    environment:
+    env_file:
+      - ./.env  # Load environment variables from the .env file
+    environment: # Used for EC2 instance, overridden when passed inline
       - ALLOWED_ORIGINS
       - ALLOW_CREDENTIALS
       - ALLOW_METHODS

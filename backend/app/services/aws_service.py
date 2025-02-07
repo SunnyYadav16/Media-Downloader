@@ -1,5 +1,4 @@
 import os
-from venv import logger
 
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError, PartialCredentialsError
@@ -8,12 +7,17 @@ from ..core.config_settings import settings
 
 
 class AwsService:
-    s3_client = boto3.client('s3')
 
     def __init__(self):
         self.aws_access_key = settings.AWS_ACCESS_KEY_ID_VALUE
         self.aws_secret_key = settings.AWS_SECRET_ACCESS_KEY_VALUE
         self.bucket_name = settings.S3_BUCKET_NAME
+        # Explicitly pass credentials to boto3
+        self.s3_client = boto3.client(
+            's3',
+            aws_access_key_id=self.aws_access_key,
+            aws_secret_access_key=self.aws_secret_key
+        )
         self.is_s3_connected()
 
     # Upload the file
@@ -25,10 +29,8 @@ class AwsService:
             :return: True if connected, False otherwise.
             """
         try:
-
             # Try to access the bucket by listing its contents (limited to 1 item)
             self.s3_client.list_objects_v2(Bucket=self.bucket_name, MaxKeys=1)
-            logger.info(f"Successfully connected to the S3 bucket")
             return True
         except NoCredentialsError:
             print("AWS credentials not found.")
