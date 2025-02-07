@@ -9,5 +9,12 @@ services:
       - "8000:8000"  # Expose the application on port 8000
     volumes:
       - .:/app  # Mount the current directory into the container
-    env_file:
-      - ./.env  # Load environment variables from the .env file
+    environment:
+      - ALLOWED_ORIGINS
+      - ALLOW_CREDENTIALS
+      - ALLOW_METHODS
+      - ALLOW_HEADERS
+      - APP_DEBUG
+      - S3_BUCKET_NAME
+      - AWS_ACCESS_KEY_ID_VALUE
+      - AWS_SECRET_ACCESS_KEY_VALUE
