@@ -10,7 +10,9 @@ import yt_dlp
 
 from .aws_service import AwsService
 from ..core.exceptions import YouTubeDownloadError
+
 aws_service = AwsService()
+
 
 class YouTubeService:
     def __init__(self):
