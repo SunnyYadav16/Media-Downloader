@@ -1,171 +1,154 @@
-<p align="center">
-    <img src="https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png" alt="FastAPI image"/>
-</p>
-<p align="center">
-    <a href="https://github.com/WMRamadan/fastapi-boilerplate/actions/workflows/python-app.yml" target="_blank">
-    <img src="https://github.com/wmramadan/fastapi-boilerplate/actions/workflows/python-app.yml/badge.svg" alt="Test">
-    </a>
-    <img src="https://img.shields.io/badge/platforms-Windows%20%7C%20Mac%20%7C%20Linux-orange" alt="Supported Platforms">
-    <img src="https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11-blue" alt="Supported Python versions">
-</p>
+# Media Downloader (Backend)
 
-# FastAPI Boilerplate
-FastAPI REST API pre-configured with a database. This will get you up and running with CRUD operations quickly. Use this starter, boilerplate for all your new FastAPI projects.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
+[![yt-dlp](https://img.shields.io/badge/yt--dlp-2023.11.16-orange)](https://github.com/yt-dlp/yt-dlp)
+[![Docker](https://img.shields.io/badge/Docker-✓-2496ED)](https://www.docker.com/)
 
-## Requirements
-- Python3
-- python3-virtualenv
-- python3-pip
-- Docker
-- Docker-compose
+A high-performance backend service for downloading YouTube media.
 
-## Features
-- SQLAlchemy
-- Pydantic
-- Docker
-- Logging
-- Celery
-- Tests
-- Config
-- SSE
-- PyMongo
+---
 
-## ToDo
-- Version 1.0 [Roadmap](./docs/v1-roadmap.md)
+## 🌟 Features
 
-## File Structure
+- **YouTube & Beyond**: Download videos/audio from YouTube (other platforms - coming soon).
+- **Dockerized**: Pre-configured for seamless deployment.
+- **Advanced Formatting**: Choose video/audio quality and merge streams with FFmpeg.
+
+---
+
+## 📂 Directory Structure
+
 ```
-.
-├── api
-│   ├── __init__.py
-│   ├── collections.py
-│   ├── config.py
-│   ├── database.py
-│   ├── main.py
-|   ├── worker.py
-│   └── models
-│   │   ├── __init__.py
-│   │   ├── item_model.py
-│   │   └── task_model.py
-│   │   └── user_model.py
-│   └── schemas
-│   │   ├── __init__.py
-│   │   ├── items_schema.py
-│   │   ├── questions_schema.py
-│   │   └── tasks_schema.py
-│   │   └── users_schema.py
-│   └── routers
-│   │   ├── __init__.py
-│   │   ├── async_router.py
-│   │   ├── items.py
-│   │   ├── questions.py
-│   │   ├── stream.py
-│   │   ├── tasks.py
-│   │   └── users.py
-│   └── helpers
-│   │   ├── __init__.py
-│   │   ├── async_helper.py
-│   │   └── crud.py
-│   └── tests
-│   │   ├── __init__.py
-│   │   ├── db.py
-│   │   └── test_main.py
-├── docker
-│   └── Dockerfile
+backend/
+├── app/
+│   ├── core/                     # Core application components
+│   │   ├── config_settings.py    # Application configuration management
+│   │   └── exceptions.py         # Custom exception definitions
+│   │
+│   ├── models/                   # Database models
+│   │   └── youtube.py            # YouTube-related data models (Empty right now)
+│   │
+│   ├── routers/                  # API route definitions
+│   │   └── youtube_router.py     # YouTube-related endpoints
+│   │
+│   ├── schemas/                  # Pydantic schemas
+│   │   └── youtube_schema.py     # Data validation schemas for YouTube
+│   │
+│   ├── services/                 # Business logic implementation
+│   │   ├── aws_service.py        # AWS integration service
+│   │   └── youtube_service.py    # YouTube business logic
+│   │
+│   ├── utils/                    # Utility functions
+│   │   └── validator.py          # Input validation utilities
+│   │
+│   └── main.py                   # Application entry point
+│
+├── .env                          # Environment variables
+├── Dockerfile                    # Container configuration
+├── docker-compose.yml            # Container orchestration
+├── requirements.txt              # Python dependencies
+└── README.md                     # Project documentation
 ```
+
+---
 
 ## Environment Variables
-- SQLALCHEMY_DATABASE_URL - Database URL used, can be either SQLite or PostgreSQL.
-- MONGODB_URL - Database URL for MongoDB server.
-- MONGODB_NAME - Name used for MongoDB Database.
-- CELERY_CONF_BROKER_URL - Celery redis broker URL.
-- CELERY_CONF_RESULT_BACKEND - Celery redis result backend.
-- ALLOWED_ORIGINS - A list of origins that should be permitted to make cross-origin requests.
-- ALLOW_CREDENTIALS - Allowed credentials `bool` for CORS middelware.
-- ALLOW_METHODS - Allowed methods ['GET','POST','PUT','PATCH','DELETE','OPTIONS'] for CORS middleware.
-- ALLOW_HEADERS - A list of HTTP request headers that should be supported for cross-origin requests.
-- APP_DEBUG - Set app debug mode `bool` value.
 
-## Updating Changelog
-You can run `git-changelog.sh` bash script to update the [CHANGELOG](./CHANGELOG.md) file using the following command:
-```bash
-bash git-changelog.sh > CHANGELOG.md
+The application uses environment variables for configuration. Create a .env file in the root directory with the
+following variables:
+
+```
+# CORS Config
+ALLOWED_ORIGINS='["*"]'
+ALLOW_CREDENTIALS=True
+ALLOW_METHODS='["*"]'
+ALLOW_HEADERS='["*"]'
+
+# Server Configuration
+APP_DEBUG=True / False
+
+# AWS Credentials
+AWS_ACCESS_KEY_ID_VALUE=your_access_key
+AWS_SECRET_ACCESS_KEY_VALUE=your_secret_key
+AWS_REGION=your_region
+S3_BUCKET_NAME=your_bucket_name
 ```
 
-## Linting
-You can run `pylint` with the following command inside the `fastapi-boilerplate` directory:
-```bash
-pylint --recursive=y app
-```
+## 🚀 Quick Start
 
-## Running Tests
-You can run `pytest` with the following command inside the `fastapi-boilerplate` directory:
-```bash
-pytest app/
-```
+### Prerequisites
 
-## Quick Start (Local)
-1. Clone the repo:
-    ```bash
-    git clone https://github.com/WMRamadan/fastapi-boilerplate
-    cd fastapi-boilerplate
-    ```
-2. Initialize and activate a virtual environment:
-    ```bash
-    virtualenv env
-    source env/bin/activate
+- Python 3.10+
+- FFmpeg (for merging audio/video)
+- Docker (optional)
+
+### Installation
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/SunnyYadav16/Media-Downloader.git
+   cd Media-Downloader/backend
+
+2. **Install Dependencies**:
+   ```bash
+    pip install -r requirements.txt
     ```
 
-3. Install dependencies:
+3. **Install FFmpeg**:
+   ```bash
+   - Download from https://github.com/yt-dlp/FFmpeg-Builds
+   - Add to your system PATH
+   - Verify installation: ffmpeg -version  
+   ```
+
+4. **Run the Service (using Docker)**:
     ```bash
-    pip3 install -r requirements.txt
+    docker compose build
+    docker compose up
     ```
 
-4. Run `redis` service required for celery worker:
+5. **Run the Service Locally**:
     ```bash
-    docker-compose -f docker-compose-services.yml up -d
-    ```
+   uvicorn app.main:app --reload
+   ``` 
+   OR
+   ```bash
+   fastapi dev app/main.py
+   ```
+   
+---
 
-5. Run `celery` worker:
-    ```bash
-    celery --app=app.worker.celery worker --loglevel=info --logfile=celery.log
-    ```
+## FFmpeg Requirement
+- FFmpeg is a required dependency for video and audio processing operations. Before running the application:
 
-6. Run the development server:
-    ```bash
-    uvicorn app.main:app --reload
-    ```
+   1. Install FFmpeg and ensure it's accessible in your system's PATH
+   2. You can obtain FFmpeg builds from: https://github.com/yt-dlp/FFmpeg-Builds
+   3. Verify your installation by running ffmpeg -version in your terminal
 
-7. View the API docs:
-    ```bash
-    http://localhost:8000/docs
-    # OR
-    http://localhost:8000/redoc
-    ```
+### Available Builds
+The repository provides static builds for multiple platforms:
 
-## Quick Start (Docker)
-1. Clone the repo:
-    ```bash
-    git clone https://github.com/WMRamadan/fastapi-boilerplate
-    cd fastapi-boilerplate
-    ```
-2. Build:
-    ```bash
-    docker-compose build
-    ```
+**Linux**:
+- x64 (64-bit)
+- ARM64 (aarch64)
 
-3. Run the app:
-    ```bash
-    docker-compose up
-    ```
+**Windows**:
+- x86 (32-bit)
+- x64 (64-bit)
+- ARM64
 
-4. View the API docs:
-    ```bash
-    http://localhost/docs
-    # OR
-    http://localhost/redoc
-    ```
 
-## Contribution
+### Important Note
+1. There are currently no **MacOS** builds
+2. These builds are specifically optimized for use with yt-dlp.
 
-Please check our [Contributing Guide](./docs/CONTRIBUTING.md) on how you can contribute.
+---
+
+## 🤝 Contributing
+
+1. Fork the repository.
+2. Create a branch: git checkout -b feature/your-feature.
+3. Commit changes: git commit -m "Add your feature".
+4. Push to the branch: git push origin feature/your-feature.
+5. Open a pull request.
