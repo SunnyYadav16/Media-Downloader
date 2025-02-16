@@ -33,5 +33,14 @@ A full-stack solution for downloading media from various platforms. Comprises a 
    - [Frontend Guide](./frontend/README.md)
    - [Backend Guide](./backend/README.md)
 
-## License
-[MIT License](LICENSE.txt)
+
+
+---
+
+## 👨💻 Developer
+
+**Sunny Yadav**  
+📌 Full Stack Developer  
+🔗 [GitHub Profile](https://github.com/SunnyYadav16)  
+🔗 [LinkedIn Profile](https://www.linkedin.com/in/sunnyyadavdev)  
+🛠️ Creator of Media Downloader ecosystem
